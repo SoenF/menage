@@ -29,6 +29,7 @@ if (!fs.existsSync(dataDir)) {
 }
 
 // API Routes
+app.use('/auth', require('./routes/auth'));
 app.use('/api', require('./routes/api'));
 
 // Serve main page

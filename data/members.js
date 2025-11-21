@@ -1,75 +1,83 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const filePath = path.join(__dirname, 'members.json');
-let members = [];
+const membersCache = {};
 
-// Asynchronously initialize members data from file
-async function initializeMembers() {
+async function getMembers(familyId) {
+    if (membersCache[familyId]) {
+        return membersCache[familyId];
+    }
+
+    const filePath = path.join(__dirname, familyId, 'members.json');
     try {
         const data = await fs.readFile(filePath, 'utf8');
-        members = JSON.parse(data);
+        membersCache[familyId] = JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
-            // File doesn't exist, initialize with an empty array
+            membersCache[familyId] = [];
+            // Ensure directory exists
+            await fs.mkdir(path.join(__dirname, familyId), { recursive: true });
             await fs.writeFile(filePath, JSON.stringify([], null, 2));
         } else {
-            console.error('Failed to initialize members data:', error);
-            process.exit(1); // Exit if we can't read the data file
+            console.error(`Failed to initialize members data for family ${familyId}:`, error);
+            throw error;
         }
     }
+    return membersCache[familyId];
 }
 
-// Function to save data asynchronously
-function saveMembers() {
-    // No need to wait for this to complete. Fire and forget.
-    fs.writeFile(filePath, JSON.stringify(members, null, 2)).catch(err => {
-        console.error('Failed to save members data:', err);
+function saveMembers(familyId) {
+    if (!membersCache[familyId]) return;
+
+    const filePath = path.join(__dirname, familyId, 'members.json');
+    fs.writeFile(filePath, JSON.stringify(membersCache[familyId], null, 2)).catch(err => {
+        console.error(`Failed to save members data for family ${familyId}:`, err);
     });
 }
 
-function getAllMembers() {
-    return members;
+async function getAllMembers(familyId) {
+    return await getMembers(familyId);
 }
 
-function addMember(name) {
+async function addMember(familyId, name) {
+    const members = await getMembers(familyId);
     const newMember = {
         id: Date.now().toString(),
         name,
         points: 0
     };
     members.push(newMember);
-    saveMembers();
+    saveMembers(familyId);
     return newMember;
 }
 
-function deleteMember(id) {
+async function deleteMember(familyId, id) {
+    const members = await getMembers(familyId);
     const initialLength = members.length;
-    members = members.filter(member => member.id !== id);
-    if (members.length === initialLength) {
+    membersCache[familyId] = members.filter(member => member.id !== id);
+
+    if (membersCache[familyId].length === initialLength) {
         throw new Error('Member not found');
     }
-    saveMembers();
+    saveMembers(familyId);
 
     // Also update tasks assigned to this member
     const tasksManager = require('./tasks');
-    tasksManager.updateTasksForMemberDeletion(id);
+    await tasksManager.updateTasksForMemberDeletion(familyId, id);
 }
 
-function updateMemberPoints(memberId, pointsChange) {
+async function updateMemberPoints(familyId, memberId, pointsChange) {
+    const members = await getMembers(familyId);
     const member = members.find(m => m.id === memberId);
 
     if (member) {
         member.points = Math.max(0, member.points + pointsChange);
-        saveMembers();
+        saveMembers(familyId);
         return member;
     }
 
     return null;
 }
-
-// Initialize data on module load and export functions
-initializeMembers();
 
 module.exports = {
     getAllMembers,

@@ -1,39 +1,46 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const filePath = path.join(__dirname, 'tasks.json');
-let tasks = [];
+const tasksCache = {};
 
-// Asynchronously initialize tasks data from file
-async function initializeTasks() {
+async function getTasks(familyId) {
+    if (tasksCache[familyId]) {
+        return tasksCache[familyId];
+    }
+
+    const filePath = path.join(__dirname, familyId, 'tasks.json');
     try {
         const data = await fs.readFile(filePath, 'utf8');
-        tasks = JSON.parse(data);
+        tasksCache[familyId] = JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
+            tasksCache[familyId] = [];
+            await fs.mkdir(path.join(__dirname, familyId), { recursive: true });
             await fs.writeFile(filePath, JSON.stringify([], null, 2));
         } else {
-            console.error('Failed to initialize tasks data:', error);
-            process.exit(1);
+            console.error(`Failed to initialize tasks data for family ${familyId}:`, error);
+            throw error;
         }
     }
+    return tasksCache[familyId];
 }
 
-// Function to save data asynchronously
-function saveTasks() {
-    fs.writeFile(filePath, JSON.stringify(tasks, null, 2)).catch(err => {
-        console.error('Failed to save tasks data:', err);
+function saveTasks(familyId) {
+    if (!tasksCache[familyId]) return;
+
+    const filePath = path.join(__dirname, familyId, 'tasks.json');
+    fs.writeFile(filePath, JSON.stringify(tasksCache[familyId], null, 2)).catch(err => {
+        console.error(`Failed to save tasks data for family ${familyId}:`, err);
     });
 }
 
-// Initialize data on module load
-initializeTasks();
-
-function getAllTasks() {
-    return tasks;
+async function getAllTasks(familyId) {
+    return await getTasks(familyId);
 }
 
-function addTask(title, difficulty, assignedTo, completed = false, repeat = null, dueDate = null, hasParent = null) {
+async function addTask(familyId, title, difficulty, assignedTo, completed = false, repeat = null, dueDate = null, hasParent = null) {
+    const tasks = await getTasks(familyId);
+
     if (![1, 2, 3].includes(parseInt(difficulty))) {
         throw new Error('Difficulty must be 1, 2, or 3');
     }
@@ -57,11 +64,12 @@ function addTask(title, difficulty, assignedTo, completed = false, repeat = null
     };
 
     tasks.push(newTask);
-    saveTasks();
+    saveTasks(familyId);
     return newTask;
 }
 
-function updateTask(id, title, difficulty, assignedTo, completed, repeat, dueDate, hasParent) {
+async function updateTask(familyId, id, title, difficulty, assignedTo, completed, repeat, dueDate, hasParent) {
+    const tasks = await getTasks(familyId);
     const taskIndex = tasks.findIndex(task => task.id === id);
 
     if (taskIndex === -1) {
@@ -81,33 +89,29 @@ function updateTask(id, title, difficulty, assignedTo, completed, repeat, dueDat
     if (dueDate !== undefined) task.dueDate = dueDate;
     if (hasParent !== undefined) task.hasParent = hasParent;
 
-    saveTasks();
+    saveTasks(familyId);
     return task;
 }
 
-function deleteTask(id, cascade = false) {
+async function deleteTask(familyId, id, cascade = false) {
+    const tasks = await getTasks(familyId);
     const initialLength = tasks.length;
 
     if (cascade) {
-        // Delete the task AND all tasks that have this task as parent
-        tasks = tasks.filter(task => task.id !== id && task.hasParent !== id);
+        tasksCache[familyId] = tasks.filter(task => task.id !== id && task.hasParent !== id);
     } else {
-        tasks = tasks.filter(task => task.id !== id);
+        tasksCache[familyId] = tasks.filter(task => task.id !== id);
     }
 
-    if (tasks.length === initialLength) {
-        // If nothing was deleted, maybe the ID was a child task?
-        // If cascade is true, we might want to try deleting by parent ID if the ID passed was a parent?
-        // But for now, let's stick to the ID passed.
-        // If we are deleting a child task, we just delete that child.
-        // If we are deleting a parent task with cascade, we delete parent + children.
+    if (tasksCache[familyId].length === initialLength) {
         throw new Error('Task not found');
     }
-    saveTasks();
+    saveTasks(familyId);
     return true;
 }
 
-function updateTaskCompletion(id, completed) {
+async function updateTaskCompletion(familyId, id, completed) {
+    const tasks = await getTasks(familyId);
     const taskIndex = tasks.findIndex(task => task.id === id);
 
     if (taskIndex === -1) {
@@ -120,18 +124,19 @@ function updateTaskCompletion(id, completed) {
 
     if (task.assignedTo) {
         const membersManager = require('./members');
-        membersManager.updateMemberPoints(task.assignedTo, pointsChange);
+        await membersManager.updateMemberPoints(familyId, task.assignedTo, pointsChange);
     }
 
     if (completed && task.repeat && task.repeat.enabled) {
-        createNextRepeatTask(task);
+        await createNextRepeatTask(familyId, task);
     }
 
-    saveTasks();
+    saveTasks(familyId);
     return task;
 }
 
-function createNextRepeatTask(originalTask) {
+async function createNextRepeatTask(familyId, originalTask) {
+    const tasks = await getTasks(familyId);
     const nextDate = new Date();
     nextDate.setDate(nextDate.getDate() + originalTask.repeat.interval);
 
@@ -150,19 +155,21 @@ function createNextRepeatTask(originalTask) {
     };
 
     tasks.push(newTask);
-    saveTasks();
+    saveTasks(familyId);
 }
 
-function updateTasksForMemberDeletion(memberId) {
+async function updateTasksForMemberDeletion(familyId, memberId) {
+    const tasks = await getTasks(familyId);
     tasks.forEach(task => {
         if (task.assignedTo === memberId) {
             task.assignedTo = null;
         }
     });
-    saveTasks();
+    saveTasks(familyId);
 }
 
-function generateFutureTasks(taskId) {
+async function generateFutureTasks(familyId, taskId) {
+    const tasks = await getTasks(familyId);
     const task = tasks.find(t => t.id === taskId);
     if (!task || !task.repeat || !task.repeat.enabled) return;
 
@@ -170,11 +177,9 @@ function generateFutureTasks(taskId) {
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth();
 
-    // Calculate end date: end of next month
     const endDate = new Date(currentYear, currentMonth + 2, 0);
 
     let nextDate = new Date(task.dueDate);
-    // Start from the next interval
     nextDate.setDate(nextDate.getDate() + task.repeat.interval);
 
     const newTasks = [];
@@ -182,7 +187,6 @@ function generateFutureTasks(taskId) {
     while (nextDate <= endDate) {
         const dateStr = nextDate.toISOString().split('T')[0];
 
-        // Check if instance already exists
         const exists = tasks.some(t =>
             t.hasParent === task.id &&
             t.dueDate.split('T')[0] === dateStr
@@ -193,7 +197,7 @@ function generateFutureTasks(taskId) {
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                 title: task.title,
                 difficulty: task.difficulty,
-                assignedTo: null, // Will be distributed later
+                assignedTo: null,
                 completed: false,
                 dueDate: nextDate.toISOString(),
                 repeat: { ...task.repeat, nextDate: nextDate.toISOString() },
@@ -208,37 +212,30 @@ function generateFutureTasks(taskId) {
     }
 
     if (newTasks.length > 0) {
-        // If the parent task has an assignee, use it for all new tasks
         if (task.assignedTo) {
             newTasks.forEach(t => t.assignedTo = task.assignedTo);
         } else {
-            // Otherwise distribute fairly
-            distributeTasksFairly(newTasks);
+            await distributeTasksFairly(familyId, newTasks);
         }
-        saveTasks();
+        saveTasks(familyId);
     }
 
     return newTasks;
 }
 
-function distributeTasksFairly(newTasks) {
+async function distributeTasksFairly(familyId, newTasks) {
     const membersManager = require('./members');
-    const members = membersManager.getAllMembers();
+    const members = await membersManager.getAllMembers(familyId);
 
     if (members.length === 0) return;
 
-    // Sort members by points (ascending)
-    // We create a local copy of points to simulate distribution without saving yet
     const memberPoints = members.map(m => ({ id: m.id, points: m.points }));
 
     newTasks.forEach(task => {
-        // Sort to find member with least points currently
         memberPoints.sort((a, b) => a.points - b.points);
         const targetMember = memberPoints[0];
 
         task.assignedTo = targetMember.id;
-
-        // Simulate point addition for next iteration
         targetMember.points += task.difficulty * 10;
     });
 }

@@ -1,34 +1,57 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 // Import data managers
 const membersManager = require('../data/members');
 const tasksManager = require('../data/tasks');
 
-// Members routes
-router.get('/members', (req, res) => {
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
+
+// Authentication Middleware
+const authenticate = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
     try {
-        const members = membersManager.getAllMembers();
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.familyId = decoded.familyId;
+        next();
+    } catch (error) {
+        return res.status(403).json({ error: 'Forbidden: Invalid token' });
+    }
+};
+
+// Apply middleware to all API routes
+router.use(authenticate);
+
+// Members routes
+router.get('/members', async (req, res) => {
+    try {
+        const members = await membersManager.getAllMembers(req.familyId);
         res.json(members);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-router.post('/members', (req, res) => {
+router.post('/members', async (req, res) => {
     try {
         const { name } = req.body;
-        const newMember = membersManager.addMember(name);
+        const newMember = await membersManager.addMember(req.familyId, name);
         res.status(201).json(newMember);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-router.delete('/members/:id', (req, res) => {
+router.delete('/members/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        membersManager.deleteMember(id);
+        await membersManager.deleteMember(req.familyId, id);
         res.status(204).send();
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -36,10 +59,10 @@ router.delete('/members/:id', (req, res) => {
 });
 
 // Tasks routes
-router.get('/tasks', (req, res) => {
+router.get('/tasks', async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
-        let tasks = tasksManager.getAllTasks();
+        let tasks = await tasksManager.getAllTasks(req.familyId);
 
         if (startDate && endDate) {
             const start = new Date(startDate);
@@ -60,21 +83,21 @@ router.get('/tasks', (req, res) => {
     }
 });
 
-router.post('/tasks', (req, res) => {
+router.post('/tasks', async (req, res) => {
     try {
         const { title, difficulty, assignedTo, completed, repeat, dueDate, hasParent } = req.body;
-        const newTask = tasksManager.addTask(title, difficulty, assignedTo, completed, repeat, dueDate, hasParent);
+        const newTask = await tasksManager.addTask(req.familyId, title, difficulty, assignedTo, completed, repeat, dueDate, hasParent);
         res.status(201).json(newTask);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-router.put('/tasks/:id', (req, res) => {
+router.put('/tasks/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { title, difficulty, assignedTo, completed, repeat, dueDate, hasParent } = req.body;
-        const updatedTask = tasksManager.updateTask(id, title, difficulty, assignedTo, completed, repeat, dueDate, hasParent);
+        const updatedTask = await tasksManager.updateTask(req.familyId, id, title, difficulty, assignedTo, completed, repeat, dueDate, hasParent);
 
         res.json(updatedTask);
     } catch (error) {
@@ -82,32 +105,32 @@ router.put('/tasks/:id', (req, res) => {
     }
 });
 
-router.delete('/tasks/:id', (req, res) => {
+router.delete('/tasks/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { cascade } = req.query;
-        tasksManager.deleteTask(id, cascade === 'true');
+        await tasksManager.deleteTask(req.familyId, id, cascade === 'true');
         res.status(204).send();
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-router.put('/tasks/:id/complete', (req, res) => {
+router.put('/tasks/:id/complete', async (req, res) => {
     try {
         const { id } = req.params;
         const { completed } = req.body;
-        const updatedTask = tasksManager.updateTaskCompletion(id, completed);
+        const updatedTask = await tasksManager.updateTaskCompletion(req.familyId, id, completed);
         res.json(updatedTask);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-router.post('/tasks/generate-future', (req, res) => {
+router.post('/tasks/generate-future', async (req, res) => {
     try {
         const { taskId } = req.body;
-        const newTasks = tasksManager.generateFutureTasks(taskId);
+        const newTasks = await tasksManager.generateFutureTasks(req.familyId, taskId);
         res.status(201).json(newTasks || []);
     } catch (error) {
         res.status(400).json({ error: error.message });

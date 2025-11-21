@@ -1,4 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Auth Check
+    const token = localStorage.getItem('sweepy_token');
+    if (!token) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    // Override fetch to include token
+    const originalFetch = window.fetch;
+    window.fetch = function (url, options = {}) {
+        options.headers = options.headers || {};
+        options.headers['Authorization'] = `Bearer ${token}`;
+
+        return originalFetch(url, options).then(response => {
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem('sweepy_token');
+                localStorage.removeItem('sweepy_family');
+                window.location.href = '/login.html';
+            }
+            return response;
+        });
+    };
+
+    // Logout function
+    window.logout = function () {
+        localStorage.removeItem('sweepy_token');
+        localStorage.removeItem('sweepy_family');
+        window.location.href = '/login.html';
+    };
+
     // Éléments DOM
     const membersList = document.getElementById('members-list');
     const tasksList = document.getElementById('tasks-list');
@@ -8,6 +38,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Boutons
     const addMemberBtn = document.getElementById('add-member-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', window.logout);
+    }
 
     // Champs de saisie
     const memberNameInput = document.getElementById('member-name');
