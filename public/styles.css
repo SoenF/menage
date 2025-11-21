@@ -1,0 +1,771 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', 'Marker Felt', 'Chalkboard SE', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    color: #5a3e36;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 30px;
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd);
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: "🌟";
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 24px;
+}
+
+header::after {
+    content: "🌈";
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 24px;
+}
+
+header h1 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0;
+}
+
+.section {
+    background: linear-gradient(to bottom, #fff9c4, #f8f9fa);
+    margin-bottom: 30px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border: 3px dashed #ffab91;
+    position: relative;
+}
+
+.section::before {
+    content: "🎨";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    font-size: 20px;
+}
+
+.section::after {
+    content: "✨";
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    font-size: 20px;
+}
+
+.section h2 {
+    margin-bottom: 20px;
+    color: #e91e63;
+    font-size: 2rem;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: center;
+    justify-content: center;
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.form-group input,
+.form-group select,
+.form-group button {
+    padding: 12px;
+    border: 2px solid #ffab91;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.form-group input,
+.form-group select {
+    flex: 1;
+    min-width: 200px;
+    background-color: #fff;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+}
+
+.form-group button {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    border: none;
+    cursor: pointer;
+    min-width: 140px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-group button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(45deg, #ff5252, #ff7b47);
+}
+
+.members-list,
+.tasks-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.member-card,
+.task-card {
+    background: linear-gradient(to bottom, #e3f2fd, #ffffff);
+    border: 3px solid #bbdefb;
+    border-radius: 20px;
+    padding: 20px;
+    width: 280px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.member-card:hover,
+.task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.member-card::before {
+    content: "👤";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 30px;
+    opacity: 0.2;
+}
+
+.member-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #c3cfe2, #c2e9fb);
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-name {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #5c6bc0;
+    font-size: 1.2rem;
+}
+
+.member-points {
+    color: #f57c00;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background-color: #ffecb3;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+.delete-btn {
+    background: linear-gradient(45deg, #f44336, #e91e63);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete-btn:hover {
+    background: linear-gradient(45deg, #d32f2f, #c2185b);
+    transform: scale(1.05);
+}
+
+.task-card {
+    position: relative;
+    background: linear-gradient(135deg, #f0f4c3, #fff9c4);
+    border: 3px solid #cddc39;
+}
+
+.task-card::before {
+    content: "✅";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 25px;
+    opacity: 0.3;
+}
+
+.task-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #388e3c;
+    font-size: 1.3rem;
+}
+
+.task-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: #5d4037;
+    margin-bottom: 12px;
+    background-color: #e8f5e9;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.task-assignee {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.task-difficulty {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.difficulty-1 {
+    background: linear-gradient(45deg, #4caf50, #81c784);
+    color: white;
+}
+
+.difficulty-2 {
+    background: linear-gradient(45deg, #ff9800, #ffb74d);
+    color: white;
+}
+
+.difficulty-3 {
+    background: linear-gradient(45deg, #f44336, #ef5350);
+    color: white;
+}
+
+.task-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.task-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.task-actions button:hover {
+    transform: scale(1.1);
+}
+
+.complete-btn {
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    color: white;
+}
+
+.complete-btn.completed {
+    background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+}
+
+.edit-btn {
+    background: linear-gradient(45deg, #2196f3, #42a5f5);
+    color: white;
+}
+
+.delete-task-btn {
+    background: linear-gradient(45deg, #f44336, #ef5350);
+    color: white;
+}
+
+.points-board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+}
+
+.points-member {
+    background: linear-gradient(to bottom, #f8bbd0, #f48fb1);
+    border: 3px solid #ec407a;
+    border-radius: 20px;
+    padding: 20px;
+    width: 220px;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.points-member h3 {
+    margin-bottom: 12px;
+    color: #880e4f;
+    font-size: 1.4rem;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.points-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #e91e63;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #ffeb3b, #ffc107);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.schedule {
+    margin-top: 25px;
+    overflow-x: auto;
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 2px solid #81d4fa;
+    padding: 12px;
+    text-align: left;
+}
+
+.schedule-table th {
+    background: linear-gradient(45deg, #2196f3, #03a9f4);
+    color: white;
+    font-weight: bold;
+}
+
+.schedule-day {
+    background-color: #e1f5fe;
+}
+
+.schedule-task {
+    padding: 2px;
+    margin: 1px 0;
+    background: linear-gradient(90deg, #e8f5e9, #c8e6c9);
+    border-left: 2px solid #4caf50;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    line-height: 1.1;
+}
+
+.day-number {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+    color: #5a3e36;
+}
+
+.due-today {
+    color: red;
+    font-weight: bold;
+}
+
+.due-tomorrow {
+    color: orange;
+    font-weight: bold;
+}
+
+.due-future {
+    color: green;
+    font-weight: bold;
+}
+
+.overdue {
+    color: darkred;
+    font-weight: bold;
+}
+
+.calendar-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: 2px solid #ffab91;
+    background: #e0e0e0;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    border-color: #ff5252;
+}
+
+.tab-btn:hover {
+    background: linear-gradient(45deg, #ff5252, #ff7b47);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: linear-gradient(45deg, #2196f3, #03a9f4);
+    color: white;
+    border-radius: 10px;
+}
+
+.calendar-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.nav-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #ff5252, #ff7b47);
+}
+
+.monthly-calendar-view {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.weekdays-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+    background: #e3f2fd;
+    border-radius: 8px;
+}
+
+.weekday {
+    text-align: center;
+    font-weight: bold;
+    color: #1976d2;
+    padding: 10px;
+}
+
+.weeks-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day-cell {
+    min-height: 120px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: #fafafa;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.day-cell:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.day-cell.empty {
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+}
+
+.day-number {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #5a3e36;
+}
+
+.day-tasks {
+    margin-top: 25px;
+    max-height: 90px;
+    overflow-y: auto;
+}
+
+.task-item {
+    padding: 1px 2px;
+    margin: 1px 0;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    border-left: 2px solid #4caf50;
+    background-color: #e8f5e9;
+    line-height: 1;
+    height: auto;
+    min-height: 0;
+}
+
+.task-title {
+    font-weight: 600;
+    font-size: 0.7rem;
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.task-assignee {
+    font-size: 0.6rem;
+    color: #5a3e36;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1;
+    display: none;
+    /* Hide assignee to save space if needed, or keep it tiny */
+}
+
+.task-difficulty {
+    display: none;
+    /* Hide difficulty to save space */
+}
+
+@media (max-width: 768px) {
+    .form-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-group input,
+    .form-group select {
+        min-width: auto;
+    }
+
+    .members-list,
+    .tasks-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .member-card,
+    .task-card {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .section h2 {
+        font-size: 1.5rem;
+    }
+
+    .weeks-container {
+        gap: 4px;
+    }
+
+    .day-cell {
+        min-height: 80px;
+        font-size: 0.8rem;
+    }
+
+    .day-tasks {
+        max-height: 55px;
+    }
+
+    .task-item {
+        font-size: 0.7rem;
+        padding: 3px;
+    }
+
+    .task-title {
+        font-size: 0.8rem;
+    }
+}
+
+/* Styles pour les tâches dans le calendrier mensuel */
+.task-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.task-complete-checkbox {
+    margin-right: 5px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.task-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2px;
+}
+
+.delete-task-btn-calendar {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.delete-task-btn-calendar:hover {
+    background: #d32f2f;
+}
+
+.completed-badge {
+    font-size: 0.7rem;
+    background: #4CAF50;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 2px;
+}
+
+/* Nouveaux styles pour les actions du calendrier hebdomadaire */
+.schedule-task {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.schedule-task:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-task-actions {
+    display: none;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-task:hover .calendar-task-actions {
+    display: flex;
+    gap: 2px;
+}
+
+.cal-action-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+
+.cal-action-btn:hover {
+    transform: scale(1.2);
+}
+
+.cal-btn-delete {
+    background: #ffcdd2;
+    color: #c62828;
+}
+
+.cal-btn-move {
+    background: #bbdefb;
+    color: #1565c0;
+}
+
+.cal-btn-complete {
+    background: #c8e6c9;
+    color: #2e7d32;
+}
+
+/* Styles pour le formulaire d'ajout rapide */
+#add-task-section .form-group {
+    background: linear-gradient(to right, #e3f2fd, #e8f5e9);
+    border: 2px dashed #90caf9;
+}
+
+#quick-add-task-btn {
+    background: linear-gradient(45deg, #00bcd4, #009688);
+}

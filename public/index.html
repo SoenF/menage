@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Sweepy - Gestionnaire de tâches ménagères simple et efficace pour toute la famille. Répartissez les corvées équitablement !">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Sweepy - Gestionnaire de tâches ménagères</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧹</text></svg>">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🧹 Sweepy - Gestionnaire de tâches ménagères 🧽</h1>
+        </header>
+
+        <main>
+            <!-- Section Membres de la famille -->
+            <section class="section" id="members-section">
+                <h2>👨‍👩‍👧‍👦 Membres de la famille</h2>
+                <div class="form-group">
+                    <input type="text" id="member-name" placeholder="Entrez le nom du membre">
+                    <button id="add-member-btn">Ajouter un membre ✨</button>
+                </div>
+
+                <div class="members-list" id="members-list">
+                    <!-- Les membres seront affichés ici -->
+                </div>
+            </section>
+
+            <!-- Nouvelle section simplifiée pour l'ajout de tâches -->
+            <section class="section" id="add-task-section">
+                <h2>➕ Ajouter une tâche</h2>
+                <div class="form-group">
+                    <input type="text" id="new-task-title" placeholder="Titre de la tâche">
+                    <select id="new-task-difficulty">
+                        <option value="">Difficulté</option>
+                        <option value="1">Facile (1 pt)</option>
+                        <option value="2">Moyen (2 pts)</option>
+                        <option value="3">Difficile (3 pts)</option>
+                    </select>
+                    <select id="new-task-frequency">
+                        <option value="">Fréquence</option>
+                        <option value="daily">Quotidienne</option>
+                        <option value="every3days">3 jours</option>
+                        <option value="weekly">Hebdo</option>
+                        <option value="biweekly">Bi-hebdo</option>
+                        <option value="monthly">Mensuelle</option>
+                    </select>
+                    <button id="quick-add-task-btn">Ajouter ✨</button>
+                </div>
+            </section>
+
+            <!-- Section Tâches -->
+            <section class="section" id="tasks-section">
+                <h2>⚙️ Configuration des Tâches & Historique</h2>
+
+
+                <div class="tasks-list" id="tasks-list">
+                    <!-- Les tâches seront affichées ici -->
+                </div>
+
+                <div class="manual-load-container" style="text-align: center; margin-top: 20px; display: none;"
+                    id="manual-load-container">
+                    <button id="load-tasks-btn">Afficher les tâches</button>
+                </div>
+            </section>
+
+
+
+            <!-- Section Calendrier et Points -->
+            <section class="section" id="schedule-section">
+                <h2>⭐ Calendrier & Points</h2>
+                <div class="points-board" id="points-board">
+                    <!-- Les points seront affichés ici -->
+                </div>
+
+                <!-- Onglets pour le calendrier -->
+                <div class="calendar-tabs">
+                    <button id="weekly-view-btn" class="tab-btn active">Vue Hebdomadaire</button>
+                    <button id="monthly-view-btn" class="tab-btn">Vue Mensuelle</button>
+                </div>
+
+                <div id="calendar-container">
+                    <h3 id="calendar-title">📅 Calendrier hebdomadaire</h3>
+                    <div class="schedule" id="schedule">
+                        <!-- Le calendrier sera affiché ici -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
