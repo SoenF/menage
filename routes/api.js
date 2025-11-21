@@ -5,11 +5,12 @@ const jwt = require('jsonwebtoken');
 // Import data managers
 const membersManager = require('../data/members');
 const tasksManager = require('../data/tasks');
+const familiesManager = require('../data/families');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
 // Authentication Middleware
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
@@ -18,6 +19,13 @@ const authenticate = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
+
+        // Verify that the family still exists
+        const family = await familiesManager.findFamilyById(decoded.familyId);
+        if (!family) {
+            return res.status(401).json({ error: 'Unauthorized: Family not found' });
+        }
+
         req.familyId = decoded.familyId;
         next();
     } catch (error) {
